@@ -17,6 +17,14 @@ public class Restaurant {
         sits.add(table2);
         sits.add(table3);
         sits.add(table4);
+        Food pizza = new Food("Pizza",5);
+        Food pasta = new Food("Pasta",5);
+        Food burger = new Food("Burger",3);
+        Food stake = new Food("Stake",10);
+        menu.add(pizza);
+        menu.add(pasta);
+        menu.add(burger);
+        menu.add(stake);
     }
 
     public void addFood(String food_name , int food_price) {
