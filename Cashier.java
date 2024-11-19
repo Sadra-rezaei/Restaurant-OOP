@@ -81,26 +81,29 @@ Table myTableSit;
 
                     for (Table myTableSit : rest.showSits()) {
                         if (myTableSit.getNumber() == tableNumber) {
-                            if (customer.getGroupOfCustomer() <= myTableSit.getCapacity() && customer.getGroupOfCustomer() >= (myTableSit.getCapacity()) / 2) {
-                                if (!myTableSit.isFull()) {
-                                    customer.setTable(myTableSit);
-                                    for (Chair chairTemp : myTableSit.getChairs()) {
-                                        if (!chairTemp.isFull()) {
-                                            chairTemp.changeFull();
+                            if (customer.getSitNumber() == 0) {
+                                if (customer.getGroupOfCustomer() <= myTableSit.getCapacity() && customer.getGroupOfCustomer() >= (myTableSit.getCapacity()) / 2) {
+                                    if (!myTableSit.isFull()) {
+                                        customer.setTable(myTableSit);
+                                        for (Chair chairTemp : myTableSit.getChairs()) {
+                                            if (!chairTemp.isFull()) {
+                                                chairTemp.changeFull();
+                                            }
                                         }
+                                        myTableSit.changeFull();
+                                        flag = 1; //for you sat on table
+                                        break;
+                                    } else {
+                                        flag = 2; //for table is full
                                     }
-                                    myTableSit.changeFull();
-                                    flag = 1; //for you sat on table
-                                    break;
+                                } else if (customer.getGroupOfCustomer() < (myTableSit.getCapacity()) / 2) {
+                                    flag = 4; //to low for capacity
                                 } else {
-                                    flag = 2; //for table is full
+                                    flag = 3;
                                 }
                             }
-                            else if(customer.getGroupOfCustomer() < (myTableSit.getCapacity()) / 2 ){
-                                flag = 4; //to low for capacity
-                            }
-                            else {
-                                flag = 3;
+                            else{
+                                flag = 5; // if you already sat ot a table
                             }
                         }
                     }
@@ -120,13 +123,22 @@ Table myTableSit;
                         case 4:
                             System.out.println("\nYou are too less people!\n");
                             break;
+                        case 5:
+                            System.out.println("\nYou already sat on table number " + customer.getSitNumber() + "!");
+                            System.out.println("Do you want to change your sit?(Yes/No)");
+                            String choose = scanner.next();
+                            if (choose.equals("Yes")) {
+                                customer.setSitNumber(0);
+                                System.out.println("\nPlease choose a sit again!\n");
+                            }
+                            break;
                         case 0:
                             System.out.println("\nTable is not exist!\n");
                     }
                     break;
 
                 case 5:
-                    String choice2;
+                    String true_false_choose;
                     if (customer.getSitNumber() == 0){
                         System.out.println("\nChoose a table first!\n");
                         break;
@@ -138,36 +150,53 @@ Table myTableSit;
                         System.out.print("How many do you want? ");
                         int foodNumberForOrder = scanner.nextInt();
 
+                        flag = 0;
                         for (Food order_Food_Finder : this.rest.showMenu()) {
                             if (order_Food_Finder.getName().equals(foodNameForOrder)) {
                                 System.out.println("\n" + foodNumberForOrder + " " + order_Food_Finder.getName() + " ordered for table number " + customer.getSitNumber() + "!\n");
                                 customer.setBill(foodNumberForOrder * order_Food_Finder.getPrice());
+                                flag = 1; //food ordered
                                 break;
                             }
-                            else{
-                                System.out.println("food is not in menu!\n");
-                            }
                         }
+                        if (flag == 0) { //food is not in menu
+                            System.out.println("\nFood is not in menu!\n");
+                        }
+
                         System.out.println("Anything else? (Yes/No)\n" + "enter your choice: ");
-                        choice2 = scanner.next();
-                    } while (choice2.equals("Yes"));
+                        true_false_choose = scanner.next();
+                    } while (true_false_choose.equals("Yes"));
+
                     System.out.println("Your bill is: " + customer.getBill() + "\n");
+
                     if (customer.getWallet() < customer.getBill()) {
                         System.out.println("You dont have enough money!\n");
-                        System.out.print("Would you like wash the dishes instead?(Yes/No)\n");
-                        choice2 = scanner.next();
-                        if (choice2.equals("Yes")) {
-                            System.out.println("You washed the dishes\n");
+                        System.out.print("Do you want change the order?(Yes/No)\n");
+                        true_false_choose = scanner.next();
+                        if (true_false_choose.equals("Yes")) {
+                            System.out.println("Please order again!\n");
                             customer.setBill(0);
+                            break;
                         }
                         else{
-                            System.out.println("Sorry we cant service you!");
-                            customer.setSitNumber(0);
-                            customer.getTable().changeFull();
-                            choice = 6;
-
+                            System.out.println("Would you like wash the dishes instead?(Yes/No)");
+                            true_false_choose = scanner.next();
+                            if (true_false_choose.equals("Yes")) {
+                                System.out.println("You washed the dishes!\n");
+                                customer.setBill(0);
+                            }
+                            else {
+                                System.out.println("Sorry we can't service you!");
+                                customer.setSitNumber(0);
+                                customer.getTable().changeFull();
+                                choice = 6;
+                                break;
+                            }
                         }
                     }
+                    System.out.println("Enjoy you food " + customer.getNameCustomer() + "!\n");
+                    customer.setWallet(customer.getBill());
+
             }
         } while (choice != 6);
         System.out.println("Goodbye!");
