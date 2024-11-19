@@ -46,6 +46,10 @@ public class Customer {
         return this.wallet;
     }
 
+    public void setWallet(int cost){
+        this.wallet = this.wallet - cost;
+    }
+
     public Table getTable(){
         return this.table;
     }
